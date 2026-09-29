@@ -55,7 +55,8 @@ identities for parties and validators.
 | `docs/problem-statement.md` | The adjudication gap: landscape, design rationale, open questions |
 | `spec/procedure-manifest.schema.json` | JSON Schema for the procedure manifest (v0.0 — rough draft) |
 | `spec/conformance.md` | Conformance rules beyond structural validity (the refusal boundary, executable) |
-| `spec/adjudication.md` | **New in v0.0.2:** normative adjudication state machine, Judge Result Contract, UNRESOLVED semantics, trust vocabulary |
+| `spec/adjudication.md` | Normative adjudication state machine, Judge Result Contract, UNRESOLVED semantics, trust vocabulary; v0.0.3 inserts the acquisition boundary before it |
+| `spec/acquisition.md` | **v0.0.3 candidate:** normative acquisition, provenance, authority-eligibility, C16–C21, and required F1/F1b/F2–F6/F6b regression cases |
 | `spec/judge-result.schema.json` | **New in v0.0.2:** the authoritative per-run result object (only `verdict` is binding) |
 | `examples/website-delivery.manifest.json` | Conforming example: subjective deliverable, LLM-judged rubric |
 | `examples/data-feed-sla.manifest.json` | Conforming example: measurement-driven SLA, streaming remedy |
@@ -91,14 +92,14 @@ either a bug in the reference implementation or a defect in the spec.
 
 ## Status
 
-**v0.0.2 — design review stage, first revision.** There are no contracts here
+**v0.0.3 acquisition-boundary candidate layered on v0.0.2.** There are no contracts here
 yet, deliberately. v0.0.1's procedural-closure claim was falsified in public
 review (an unspecified confidence-reduction step could flip the remedy on
 identical observations); v0.0.2 adopts the resulting invariant — every
 outcome-relevant transformation is committed in the manifest — and ships a
 replay harness with the falsifying observations as regression fixture #1. See
 `CHANGELOG.md` for the full revision and credits, and `spec/adjudication.md`
-for the normative state machine. Open design questions are tracked in
+for the downstream normative state machine, and `spec/acquisition.md` for the v0.0.3 authority-eligibility boundary. Open design questions are tracked in
 `docs/problem-statement.md` §6 and as GitHub issues; `policy_on_unresolved`'s
 reserved values are an explicit contribution surface. Feedback via issues is
 welcome; see `CONTRIBUTING.md`.

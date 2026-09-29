@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.0.3 — acquisition-boundary candidate
+
+Extends v0.0.2 semantic closure one boundary earlier: from deterministic
+consumption of frozen observations to deterministic authority over which
+observations may enter the adjudication state machine.
+
+- Adds normative acquisition and authority-eligibility semantics in
+  `spec/acquisition.md`.
+- Adds C16–C21: preauthorized slots and authoritative predecessor ordering,
+  exact request binding, provider admission plus claim uniqueness, terminal
+  uniqueness, retry closure, and authority scope.
+- Strengthens C16 so a bare `committed_at`/timestamp comparison cannot
+  manufacture predecessor authority or temporal precedence; the committed
+  provenance profile must identify an authoritative predecessor source and an
+  independently verifiable ordering mechanism.
+- Adds required fixture **F1b**: two distinct authentic provider claims for the
+  same authorized `attempt_id` MUST fail closed unless the provenance profile
+  establishes one uniquely authoritative claim.
+- Adds required fixture **F6b** for internally consistent but unauthoritative
+  predecessor timing.
+- Keeps the v0.0.2 downstream result contract and aggregation semantics intact;
+  acquisition determines which observations are eligible to enter them.
+
 ## v0.0.2 — September 2026
 
 Response to design review in the Ethereum Magicians RFC thread. The headline:

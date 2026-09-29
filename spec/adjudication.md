@@ -1,10 +1,11 @@
 # Adjudication: State Machine, Judge Result Contract, and Trust Vocabulary
 
-*Normative for spec v0.0.2. This document exists because of the closure
-counterexample presented by @chugarchugarr in the RFC thread: an
-outcome-relevant transformation (confidence reduction) was left unspecified in
-v0.0.1, allowing two conforming implementations to derive opposite remedies
-from identical frozen observations. v0.0.2 adopts the resulting invariant:*
+*Normative for the v0.0.2 adjudication boundary and retained by the v0.0.3
+candidate. This document exists because of the closure counterexample presented
+by @chugarchugarr in the RFC thread: an outcome-relevant transformation
+(confidence reduction) was left unspecified in v0.0.1, allowing two conforming
+implementations to derive opposite remedies from identical frozen observations.
+v0.0.2 adopts the resulting invariant:*
 
 > **Every evaluation-produced value capable of altering aggregation,
 > resolution, remedy selection, or contractual state MUST enter through an
@@ -18,11 +19,19 @@ Each arrow is a distinct transformation. If an arrow can change contractual
 state, its semantics are committed in the manifest. Nothing else has
 contractual authority.
 
+v0.0.3 adds a normative acquisition and authority-eligibility boundary before
+the v0.0.2 parse/aggregation pipeline. The acquisition rules are defined in
+[`spec/acquisition.md`](./acquisition.md).
+
 ```
 evidence (original + transformed + transformation_pin preserved)
+  ↓  acquisition / provenance rules (v0.0.3)
+authorized execution
   ↓
-judge observation            (raw model output per run — evidence-only)
-  ↓  parse rule (§2)
+attested observation
+  ↓  authority eligibility
+eligible observation
+  ↓  Judge Result Contract parse rule (§2)
 authoritative run result     (verdict ∈ {PASS, FAIL, UNRESOLVED})
   ↓  within-judge aggregation (majority_with_dissent_cap, declared max_dissents)
 judge verdict                (PASS | FAIL | UNRESOLVED)
@@ -38,12 +47,24 @@ authorized remedy
 manifested consequence
 ```
 
-**Semantic conformance property.** Given the same committed manifest and the
-same complete run observations, two independent conforming implementations
+An observation that fails authority eligibility, or whose eligibility cannot be
+established under the committed provenance mechanism, MUST resolve
+`UNRESOLVED` and MUST NOT enter the PASS/FAIL aggregation path.
+
+**v0.0.2 semantic conformance property.** Given the same committed manifest and
+the same complete run observations, two independent conforming implementations
 MUST derive the same requirement resolutions, the same contract outcome, and
-the same authorized remedy. The reference validator ships a replay harness
-(`validator/src/replay.ts`) and regression fixtures that exercise this
-property; fixture #1 is the falsifying observation set from the RFC thread.
+the same authorized remedy.
+
+**v0.0.3 strengthened property.** Given the same committed manifest and the same
+acquisition/transcript evidence, two independent conforming implementations
+MUST admit the same observations as authoritative and MUST derive the same
+requirement resolutions, contract outcome, and authorized remedy. See
+`spec/acquisition.md` §13.
+
+The reference validator ships a replay harness (`validator/src/replay.ts`) and
+regression fixtures that exercise the v0.0.2 property; the v0.0.3 acquisition
+fixtures are layered on top rather than changing that downstream contract.
 
 ## 2. The Judge Result Contract
 

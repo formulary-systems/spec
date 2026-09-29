@@ -1,13 +1,14 @@
-# Conformance Rules (v0.0.2)
+# Conformance Rules (v0.0.3 candidate)
 
 Structural validity against `procedure-manifest.schema.json` is **necessary but
 not sufficient**. A manifest is **arbitrable** only if it also satisfies every
-rule below. The reference validator enforces all of them; a manifest failing any
-rule is *refused at formation time* — the refusal boundary, executable before
-money moves.
+applicable rule below. A manifest failing a normative rule is *refused at
+formation time* — the refusal boundary, executable before money moves.
 
 Rules are stated as MUST requirements on the manifest. Rule ids are stable and
-citable. Rules revised in v0.0.2 are marked.
+citable. C1–C15 are the v0.0.2 rules. C16–C21 are the v0.0.3 acquisition and
+authority-eligibility extension defined normatively in
+[`spec/acquisition.md`](./acquisition.md).
 
 | Id | Rule |
 |----|------|
@@ -26,15 +27,32 @@ citable. Rules revised in v0.0.2 are marked.
 | **C13** | *(New in v0.0.2.)* `adjudication.policy_on_unresolved.policy` MUST be `"resolve_against_burden"`. The remaining enum values (`count_as_pass`, `count_as_fail`, `escalate_to_default_outcome`) are reserved: schema-known but **refused**, because an unimplemented policy is not an executable procedure. Implementations of reserved policies are welcome as contributions (see `spec/adjudication.md` §3). |
 | **C14** | *(New in v0.0.2.)* Aggregation MUST be fully parameterized: `within_judge.rule = "majority_with_dissent_cap"` with `max_dissents` present and `max_dissents < runs / 2` for **every** panel judge (so a tolerated majority is always a strict majority); `across_panel.rule = "unanimous"`. |
 | **C15** | *(New in v0.0.2.)* Every evidence item with `transformation != "none"` MUST include `transformation_pin` (pinned tool+version or content hash). An outcome-relevant transformation is part of the committed procedure; a deterministic judge over an unpinned, lossy, or adversarial transformation is not a closed procedure. |
+| **C16** | *(New in v0.0.3.)* Every LLM-judge run MUST have a deterministic `run_id` derivable from committed pre-result state. The committed provenance profile MUST identify an authoritative predecessor-state/commitment source and an independently verifiable ordering mechanism establishing that predecessor before execution acquired authority. A bare timestamp, `committed_at`, executor assertion, or local-clock comparison MUST NOT establish this relation by itself. If predecessor authority/order cannot be established, the run is `UNRESOLVED`. |
+| **C17** | *(New in v0.0.3.)* Every claimed execution MUST bind a `request_hash` covering every outcome-relevant execution input committed by the manifest. |
+| **C18** | *(New in v0.0.3.)* A claimed execution MUST carry provider/provenance attestation proving admission into the authorized slot; requester submission evidence alone MUST NOT do so. For each authorized `attempt_id`, the provenance profile MUST establish at most one authoritative claim or make multiple authentic claims detectable as equivocation with a committed fail-closed consequence. Claim uniqueness is part of `authorized_execution(o)`; if uniqueness cannot be established, `authorized_execution(o)` is not `true`. |
+| **C19** | *(New in v0.0.3.)* The provenance profile MUST establish a unique terminal state for each claimed attempt, or make terminal equivocation detectable with a committed fail-closed consequence. |
+| **C20** | *(New in v0.0.3.)* Retry MUST be authorized only by a manifest-committed, independently verifiable terminal absence/failure state. Caller-local timeout or executor assertion MUST NOT authorize another attempt. |
+| **C21** | *(New in v0.0.3.)* Every scope/limitation capable of changing contractual state MUST be structured and machine-evaluable. The manifest MUST commit the required scope and the exact satisfaction predicate. |
 
-## Semantic conformance (new in v0.0.2)
+## Semantic conformance
 
-Static rules C1–C15 are checked against the manifest text. v0.0.2 adds a
-**semantic** conformance property, checked by execution:
+v0.0.2 established the downstream semantic conformance property:
 
 > Given the same committed manifest and the same complete run observations,
 > two independent conforming implementations MUST derive the same requirement
 > resolutions, the same contract outcome, and the same authorized remedy.
+
+v0.0.3 strengthens that property one boundary earlier:
+
+> **Given the same committed manifest and the same acquisition/transcript
+> evidence, two independent conforming implementations MUST admit the same
+> observations as authoritative and MUST derive the same requirement
+> resolutions, contract outcome, and authorized remedy.**
+
+The required acquisition regression set is F1, F1b, F2–F6, and F6b in
+`spec/acquisition.md` §12. In particular, F1b requires claim-level equivocation
+to fail closed, and F6b prevents a bare numeric timestamp comparison from
+manufacturing predecessor authority/order.
 
 The reference validator ships a deterministic replay harness
 (`validator/src/replay.ts`) implementing the normative state machine in
